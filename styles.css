@@ -1,12 +1,13 @@
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;background:#0f1117;color:#f5f7fb;display:flex;justify-content:center}
-.app{width:min(900px,100%);min-height:100vh;display:flex;flex-direction:column}
-header{padding:20px;border-bottom:1px solid #292d38}
+html,body{margin:0;width:100%;height:100%;min-height:100%;font-family:system-ui,sans-serif;background:#0f1117;color:#f5f7fb}
+body{display:flex;justify-content:center;overflow:hidden}
+.app{width:min(900px,100%);height:100dvh;min-height:0;display:flex;flex-direction:column}
+header{flex:0 0 auto;padding:20px;border-bottom:1px solid #292d38;background:#0f1117}
 h1{margin:0;font-size:20px}header p{margin:5px 0 0;color:#9da5b4;font-size:13px}
-#chat{flex:1;padding:24px 20px;overflow-y:auto}
+#chat{flex:1 1 auto;min-height:0;padding:24px 20px;overflow-y:auto;overscroll-behavior:contain}
 .message{width:fit-content;max-width:80%;padding:12px 15px;margin:0 0 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
 .user{margin-left:auto;background:#315efb}.assistant{margin-right:auto;background:#1b1f29;border:1px solid #292d38}.error{background:#4a1f24;border-color:#74323a}
-form{padding:16px 20px 20px;border-top:1px solid #292d38}
+form{flex:0 0 auto;padding:16px 20px 20px;border-top:1px solid #292d38;background:#0f1117}
 .composer{position:relative;width:100%}
 textarea{display:block;width:100%;resize:none;min-height:56px;max-height:180px;padding:14px 64px 14px 15px;border:1px solid #363c49;border-radius:14px;background:#171a22;color:#fff;font:inherit;outline:none;line-height:1.4}
 textarea:focus{border-color:#315efb;box-shadow:0 0 0 3px rgb(49 94 251 / 15%)}
@@ -15,10 +16,21 @@ button:hover:not(:disabled){transform:translateY(-1px);background:#416cfb}
 button:focus-visible{outline:3px solid rgb(49 94 251 / 45%);outline-offset:2px}
 button:disabled{opacity:.5;cursor:not-allowed}
 button svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.message p{margin:0}.message p+p{margin-top:8px}.message ul{margin:0;padding-left:20px}.message li+li{margin-top:4px}.message strong{font-weight:700}.message em{font-style:italic}.message code{padding:2px 5px;border-radius:5px;background:#0f1117;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.9em}
 @media(max-width:600px){
-#chat{padding:18px 14px}.message{max-width:88%}form{padding:12px 14px 14px}
+header{padding:14px}
+#chat{padding:18px 14px}.message{max-width:88%}
+form{padding:10px 14px 12px}
 textarea{min-height:58px;padding-right:68px}
 button{right:8px;bottom:8px;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:10px}
 button svg{width:21px;height:21px}
 }
-.message p{margin:0}.message p+p{margin-top:8px}.message ul{margin:0;padding-left:20px}.message li+li{margin-top:4px}.message strong{font-weight:700}.message em{font-style:italic}.message code{padding:2px 5px;border-radius:5px;background:#0f1117;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.9em}
+@media(max-height:600px){
+header{padding:10px 14px}h1{font-size:18px}header p{margin-top:2px;font-size:12px}
+form{padding:8px 14px 10px}textarea{min-height:48px;max-height:120px;padding-top:10px;padding-bottom:10px}
+button{width:40px;height:40px;min-width:40px;min-height:40px;right:7px;bottom:7px}
+}
+@media(max-width:600px) and (max-height:600px){
+header{padding:8px 12px}#chat{padding:12px}.message{padding:10px 12px;margin-bottom:10px}form{padding:7px 12px 9px}textarea{min-height:46px;padding-right:60px}
+button{width:40px;height:40px;min-width:40px;min-height:40px}
+}
