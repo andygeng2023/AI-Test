@@ -34,17 +34,23 @@ jobs:
         uses: actions/deploy-pages@v4
 
   deploy-supabase-function:
-    if: ${{ vars.SUPABASE_PROJECT_REF != '' && secrets.SUPABASE_ACCESS_TOKEN != '' }}
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate Supabase configuration
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN" || { echo "::error::SUPABASE_ACCESS_TOKEN is missing"; exit 1; }
+          test -n "$PROJECT_REF" || { echo "::error::SUPABASE_PROJECT_REF is missing"; exit 1; }
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
+
       - name: Deploy Vireonix function
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
         run: supabase functions deploy vireonix-chat --project-ref "$PROJECT_REF" --no-verify-jwt
