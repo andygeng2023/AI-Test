@@ -1,51 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AI Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vireonix AI Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1117;
+      color: #f5f7fb;
+      display: flex;
+      justify-content: center;
+    }
+    .app { width: min(900px, 100%); min-height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 20px; border-bottom: 1px solid #292d38; }
+    header h1 { margin: 0; font-size: 20px; }
+    header p { margin: 5px 0 0; color: #9da5b4; font-size: 13px; }
+    #chat { flex: 1; padding: 24px 20px; overflow-y: auto; }
+    .message {
+      max-width: 80%;
+      padding: 12px 15px;
+      margin: 0 0 14px;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .user { margin-left: auto; background: #315efb; }
+    .assistant { margin-right: auto; background: #1b1f29; border: 1px solid #292d38; }
+    .error { background: #4a1f24; border-color: #74323a; }
+    form {
+      display: flex;
+      gap: 10px;
+      padding: 16px 20px 20px;
+      border-top: 1px solid #292d38;
+      background: #0f1117;
+    }
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 48px;
+      max-height: 150px;
+      padding: 13px;
+      border: 1px solid #363c49;
+      border-radius: 12px;
+      background: #171a22;
+      color: #fff;
+      font: inherit;
+      outline: none;
+    }
+    textarea:focus { border-color: #315efb; }
+    button {
+      align-self: flex-end;
+      height: 48px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 12px;
+      background: #315efb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+  </style>
 </head>
-
 <body>
-  <h1>Completions Test</h1>
+  <main class="app">
+    <header>
+      <h1>Vireonix AI Test</h1>
+      <p>OpenAI-compatible Vireonix API · no API key required</p>
+    </header>
 
-  <input id="key" type="password" placeholder="API key">
-  <input id="message" value="Hello!">
-  <button id="send">Send</button>
+    <section id="chat" aria-live="polite"></section>
 
-  <pre id="output"></pre>
+    <form id="form">
+      <textarea id="message" placeholder="Message the AI..." aria-label="Message" required></textarea>
+      <button id="send" type="submit">Send</button>
+    </form>
+  </main>
 
   <script>
-    const key = document.getElementById("key");
-    const message = document.getElementById("message");
-    const output = document.getElementById("output");
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("form");
+    const messageInput = document.getElementById("message");
+    const send = document.getElementById("send");
 
-    document.getElementById("send").onclick = async () => {
-      output.textContent = "Sending...";
+    const messages = [];
 
-      const response = await fetch(
-        "https://www.completions.me/api/v1/chat/completions",
-        {
+    function addMessage(role, content, extraClass = "") {
+      const el = document.createElement("div");
+      el.className = "message " + role + (extraClass ? " " + extraClass : "");
+      el.textContent = content;
+      chat.appendChild(el);
+      chat.scrollTop = chat.scrollHeight;
+      return el;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const text = messageInput.value.trim();
+      if (!text || send.disabled) return;
+
+      messages.push({ role: "user", content: text });
+      addMessage("user", text);
+      messageInput.value = "";
+      send.disabled = true;
+
+      const pending = addMessage("assistant", "Thinking...");
+
+      try {
+        const response = await fetch("https://vireonix.ai/v1/chat/completions", {
           method: "POST",
-          headers: {
-            "Authorization": "Bearer " + key.value,
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "claude-opus-4.6",
-            messages: [
-              {
-                role: "user",
-                content: message.value
-              }
-            ],
-            stream: false
+            model: "auto",
+            messages
           })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data?.error?.message || "Request failed (" + response.status + ")");
         }
-      );
 
-      const data = await response.json();
+        const answer = data?.choices?.[0]?.message?.content;
+        if (!answer) throw new Error("The API returned no message.");
 
-      output.textContent = JSON.stringify(data, null, 2);
-    };
+        pending.textContent = answer;
+        messages.push({ role: "assistant", content: answer });
+      } catch (error) {
+        pending.textContent = "Error: " + error.message;
+        pending.classList.add("error");
+      } finally {
+        send.disabled = false;
+        messageInput.focus();
+      }
+    });
+
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
   </script>
 </body>
 </html>
