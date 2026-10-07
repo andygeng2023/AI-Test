@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Vireonix AI Test</title>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -23,6 +23,15 @@
 </form>
 </main>
 <script>
+const setViewportHeight=()=>{
+  const height=window.visualViewport?.height||window.innerHeight;
+  document.documentElement.style.setProperty("--app-height",height+"px");
+};
+setViewportHeight();
+window.addEventListener("resize",setViewportHeight,{passive:true});
+window.visualViewport?.addEventListener("resize",setViewportHeight,{passive:true});
+window.visualViewport?.addEventListener("scroll",setViewportHeight,{passive:true});
+
 const SUPABASE_FUNCTION="https://amquosuyqcyyinjhvuow.supabase.co/functions/v1/vireonix-chat";
 const chat=document.getElementById("chat"),form=document.getElementById("form"),input=document.getElementById("message"),send=document.getElementById("send"),messages=[];
 
