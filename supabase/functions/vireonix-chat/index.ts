@@ -6,7 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
 };
 
 const SYSTEM_PROMPT = `
@@ -27,7 +26,7 @@ serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "POST required" }), {
       status: 405,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -37,7 +36,7 @@ serve(async (req) => {
     if (!Array.isArray(body.messages)) {
       return new Response(JSON.stringify({ error: "messages must be an array" }), {
         status: 400,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -50,26 +49,38 @@ serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
+        "Accept": "text/event-stream, application/json",
       },
       body: JSON.stringify({
         model: "auto",
         messages,
+        stream: true,
       }),
     });
 
-    const text = await upstream.text();
+    if (!upstream.ok) {
+      const text = await upstream.text();
+      return new Response(text, {
+        status: upstream.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    return new Response(text, {
+    return new Response(upstream.body, {
       status: upstream.status,
-      headers: corsHeaders,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": upstream.headers.get("content-type") || "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({
       error: error instanceof Error ? error.message : "Proxy error",
     }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
