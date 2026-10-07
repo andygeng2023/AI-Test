@@ -7,10 +7,17 @@ h1{margin:0;font-size:20px}header p{margin:5px 0 0;color:#9da5b4;font-size:13px}
 .message{max-width:80%;padding:12px 15px;margin:0 0 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
 .user{margin-left:auto;background:#315efb}.assistant{margin-right:auto;background:#1b1f29;border:1px solid #292d38}.error{background:#4a1f24;border-color:#74323a}
 form{padding:16px 20px 20px;border-top:1px solid #292d38}
-.composer{position:relative;display:flex;align-items:flex-end}
-textarea{width:100%;resize:none;min-height:52px;max-height:180px;padding:14px 54px 14px 15px;border:1px solid #363c49;border-radius:14px;background:#171a22;color:#fff;font:inherit;outline:none;line-height:1.4}
+.composer{position:relative;width:100%}
+textarea{display:block;width:100%;resize:none;min-height:56px;max-height:180px;padding:14px 64px 14px 15px;border:1px solid #363c49;border-radius:14px;background:#171a22;color:#fff;font:inherit;outline:none;line-height:1.4}
 textarea:focus{border-color:#315efb;box-shadow:0 0 0 3px rgb(49 94 251 / 15%)}
-button{position:absolute;right:8px;bottom:8px;width:36px;height:36px;padding:0;border:0;border-radius:10px;background:#315efb;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .15s,background .15s}
-button:hover:not(:disabled){transform:translateY(-1px);background:#416cfb}button:disabled{opacity:.5;cursor:not-allowed}
-button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-@media(max-width:600px){#chat{padding:18px 14px}.message{max-width:88%}form{padding:12px 14px 14px}}
+button{position:absolute;right:10px;bottom:10px;width:40px;height:40px;min-width:40px;min-height:40px;padding:0;border:0;border-radius:10px;background:#315efb;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .15s,background .15s}
+button:hover:not(:disabled){transform:translateY(-1px);background:#416cfb}
+button:focus-visible{outline:3px solid rgb(49 94 251 / 45%);outline-offset:2px}
+button:disabled{opacity:.5;cursor:not-allowed}
+button svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:600px){
+#chat{padding:18px 14px}.message{max-width:88%}form{padding:12px 14px 14px}
+textarea{min-height:58px;padding-right:68px}
+button{right:8px;bottom:8px;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:10px}
+button svg{width:21px;height:21px}
+}
