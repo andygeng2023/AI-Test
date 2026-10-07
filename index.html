@@ -24,8 +24,11 @@
 </main>
 <script>
 const setViewportHeight=()=>{
-  const height=window.visualViewport?.height||window.innerHeight;
+  const viewport=window.visualViewport;
+  const height=viewport?.height||window.innerHeight;
+  const top=viewport?.offsetTop||0;
   document.documentElement.style.setProperty("--app-height",height+"px");
+  document.documentElement.style.setProperty("--app-top",top+"px");
 };
 setViewportHeight();
 window.addEventListener("resize",setViewportHeight,{passive:true});
