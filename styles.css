@@ -21,3 +21,4 @@ textarea{min-height:58px;padding-right:68px}
 button{right:8px;bottom:8px;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:10px}
 button svg{width:21px;height:21px}
 }
+.message p{margin:0}.message p+p{margin-top:8px}.message ul{margin:0;padding-left:20px}.message li+li{margin-top:4px}.message strong{font-weight:700}.message em{font-style:italic}.message code{padding:2px 5px;border-radius:5px;background:#0f1117;font-family:ui-monospace,SFMono-Regular,monospace;font-size:.9em}
