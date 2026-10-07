@@ -25,22 +25,132 @@
 <script>
 const SUPABASE_FUNCTION="https://amquosuyqcyyinjhvuow.supabase.co/functions/v1/vireonix-chat";
 const chat=document.getElementById("chat"),form=document.getElementById("form"),input=document.getElementById("message"),send=document.getElementById("send"),messages=[];
-function add(role,text,cls=""){const el=document.createElement("div");el.className="message "+role+(cls?" "+cls:"");el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;return el}
+
+function escapeHtml(text){
+  return text.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+}
+
+function formatInline(text){
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/__(.+?)__/g,"<strong>$1</strong>")
+    .replace(/\*([^*\n]+)\*/g,"<em>$1</em>")
+    .replace(/_([^_\n]+)_/g,"<em>$1</em>");
+}
+
+function renderMarkdown(text){
+  const fragment=document.createDocumentFragment();
+  let list=null;
+  for(const line of text.split("\n")){
+    const match=line.match(/^\s*[-*]\s+(.+)$/);
+    if(match){
+      if(!list){list=document.createElement("ul");fragment.appendChild(list)}
+      const li=document.createElement("li");
+      li.innerHTML=formatInline(match[1]);
+      list.appendChild(li);
+    }else{
+      list=null;
+      const p=document.createElement("p");
+      p.innerHTML=formatInline(line);
+      fragment.appendChild(p);
+    }
+  }
+  return fragment;
+}
+
+function setMessageContent(el,text){
+  el.replaceChildren(renderMarkdown(text));
+}
+
+function add(role,text,cls=""){
+  const el=document.createElement("div");
+  el.className="message "+role+(cls?" "+cls:"");
+  setMessageContent(el,text);
+  chat.appendChild(el);
+  chat.scrollTop=chat.scrollHeight;
+  return el;
+}
+
 form.addEventListener("submit",async e=>{
-e.preventDefault();const text=input.value.trim();if(!text||send.disabled)return;
-messages.push({role:"user",content:text});add("user",text);input.value="";send.disabled=true;const pending=add("assistant","Thinking...");
-try{
-const response=await fetch(SUPABASE_FUNCTION,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({messages})});
-const raw=await response.text();let data;
-try{data=JSON.parse(raw)}catch{throw new Error("Backend returned invalid JSON (HTTP "+response.status+").")}
-if(!response.ok)throw new Error(data?.error?.message||"Backend HTTP "+response.status);
-const answer=data?.choices?.[0]?.message?.content;
-if(!answer)throw new Error("No response text returned.");
-pending.textContent=answer;messages.push({role:"assistant",content:answer});
-}catch(err){pending.textContent="Error: "+(err?.message||String(err));pending.classList.add("error");}
-finally{send.disabled=false;input.focus()}
+  e.preventDefault();
+  const text=input.value.trim();
+  if(!text||send.disabled)return;
+  messages.push({role:"user",content:text});
+  add("user",text);
+  input.value="";
+  send.disabled=true;
+  const pending=add("assistant","");
+
+  try{
+    const response=await fetch(SUPABASE_FUNCTION,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"text/event-stream, application/json"},
+      body:JSON.stringify({messages})
+    });
+
+    if(!response.ok){
+      const raw=await response.text();
+      let data;
+      try{data=JSON.parse(raw)}catch{}
+      throw new Error(data?.error?.message||"Backend HTTP "+response.status);
+    }
+
+    const contentType=response.headers.get("content-type")||"";
+    if(!response.body||!contentType.includes("text/event-stream")){
+      const data=await response.json();
+      const answer=data?.choices?.[0]?.message?.content;
+      if(!answer)throw new Error("No response text returned.");
+      setMessageContent(pending,answer);
+      messages.push({role:"assistant",content:answer});
+      return;
+    }
+
+    const reader=response.body.getReader();
+    const decoder=new TextDecoder();
+    let buffer="",answer="";
+
+    while(true){
+      const {value,done}=await reader.read();
+      if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const events=buffer.split("\n\n");
+      buffer=events.pop()||"";
+
+      for(const event of events){
+        for(const line of event.split("\n")){
+          if(!line.startsWith("data:"))continue;
+          const payload=line.slice(5).trim();
+          if(!payload||payload==="[DONE]")continue;
+          try{
+            const data=JSON.parse(payload);
+            const delta=data?.choices?.[0]?.delta?.content||"";
+            if(delta){
+              answer+=delta;
+              setMessageContent(pending,answer);
+              chat.scrollTop=chat.scrollHeight;
+            }
+          }catch{}
+        }
+      }
+    }
+
+    if(!answer)throw new Error("No streamed response text returned.");
+    messages.push({role:"assistant",content:answer});
+  }catch(err){
+    setMessageContent(pending,"Error: "+(err?.message||String(err)));
+    pending.classList.add("error");
+  }finally{
+    send.disabled=false;
+    input.focus();
+  }
 });
-input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
+
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
 </script>
 </body>
 </html>
