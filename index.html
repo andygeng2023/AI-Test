@@ -4,7 +4,106 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vireonix AI Test</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;background:#0f1117;color:#f5f7fb;display:flex;justify-content:center}.app{width:min(900px,100%);min-height:100vh;display:flex;flex-direction:column}header{padding:20px;border-bottom:1px solid #292d38}h1{margin:0;font-size:20px}header p{margin:5px 0 0;color:#9da5b4;font-size:13px}#chat{flex:1;padding:24px 20px;overflow-y:auto}.message{max-width:80%;padding:12px 15px;margin:0 0 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}.user{margin-left:auto;background:#315efb}.assistant{margin-right:auto;background:#1b1f29;border:1px solid #292d38}.error{background:#4a1f24;border-color:#74323a}form{display:flex;gap:10px;padding:16px 20px 20px;border-top:1px solid #292d38}textarea{flex:1;resize:none;min-height:48px;padding:13px;border:1px solid #363c49;border-radius:12px;background:#171a22;color:#fff;font:inherit;outline:none}button{height:48px;padding:0 20px;border:0;border-radius:12px;background:#315efb;color:#fff;font-weight:600;cursor:pointer}button:disabled{opacity:.5}
+*{
+  box-sizing:border-box
+}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:system-ui,sans-serif;
+    background:#0f1117;
+    color:#f5f7fb;
+    display:flex;
+    justify-content:center
+  }
+  
+  .app{
+    width:min(900px,100%);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column
+  }header{
+    padding:20px;
+    border-bottom:1px solid #292d38
+  }
+  
+  h1{
+    margin:0;
+    font-size:20px
+  }
+  
+  header p{
+    margin:5px 0 0;
+    color:#9da5b4;
+    font-size:13px
+  }
+  
+  #chat{
+    flex:1;
+    padding:24px 20px;
+    overflow-y:auto
+  }
+  
+  .message{
+    max-width:80%;
+    padding:12px 15px;
+    margin:0 0 14px;
+    border-radius:14px;
+    white-space:pre-wrap;
+    line-height:1.5;
+    overflow-wrap:anywhere
+  }
+  
+  .user{
+    margin-left:auto;
+    background:#315efb
+  }
+  
+  .assistant{
+    margin-right:auto;
+    background:#1b1f29;
+    border:1px solid #292d38
+  }
+  
+  .error{
+    background:#4a1f24;
+    border-color:#74323a
+  }
+  
+  form{
+    display:flex;
+    gap:10px;
+    padding:16px 20px 20px;
+    border-top:1px solid #292d38
+  }
+  
+  textarea{
+    flex:1;
+    resize:none;
+    min-height:48px;
+    padding:13px;
+    border:1px solid #363c49;
+    border-radius:12px;
+    background:#171a22;
+    color:#fff;
+    font:inherit;
+    outline:none
+  }
+  
+  button{
+    position: absolute;
+    height:24;
+    padding:0 20px;
+    border:0;
+    border-radius:12px;
+    background:#315efb;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer
+  }
+  
+  button:disabled{
+    opacity:.5}
 </style>
 </head>
 
@@ -49,4 +148,7 @@ finally{send.disabled=false;input.focus()}
 });
 
 input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
-</script></body></html>
+</script>
+</body>
+
+</html>
