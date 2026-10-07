@@ -1,7 +1,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;min-height:100%;font-family:system-ui,sans-serif;background:#0f1117;color:#f5f7fb}
 body{display:flex;justify-content:center;overflow:hidden}
-.app{width:min(900px,100%);height:100dvh;min-height:0;display:flex;flex-direction:column}
+.app{width:min(900px,100%);height:100svh;min-height:0;max-height:100svh;display:flex;flex-direction:column}
 header{flex:0 0 auto;padding:20px;border-bottom:1px solid #292d38;background:#0f1117}
 h1{margin:0;font-size:20px}header p{margin:5px 0 0;color:#9da5b4;font-size:13px}
 #chat{flex:1 1 auto;min-height:0;padding:24px 20px;overflow-y:auto;overscroll-behavior:contain}
