@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Test</title>
+</head>
+
+<body>
+  <h1>Completions Test</h1>
+
+  <input id="key" type="password" placeholder="API key">
+  <input id="message" value="Hello!">
+  <button id="send">Send</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    const key = document.getElementById("key");
+    const message = document.getElementById("message");
+    const output = document.getElementById("output");
+
+    document.getElementById("send").onclick = async () => {
+      output.textContent = "Sending...";
+
+      const response = await fetch(
+        "https://www.completions.me/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + key.value,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "claude-opus-4.6",
+            messages: [
+              {
+                role: "user",
+                content: message.value
+              }
+            ],
+            stream: false
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      output.textContent = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>
