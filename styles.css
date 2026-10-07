@@ -4,7 +4,7 @@ body{margin:0;min-height:100vh;font-family:system-ui,sans-serif;background:#0f11
 header{padding:20px;border-bottom:1px solid #292d38}
 h1{margin:0;font-size:20px}header p{margin:5px 0 0;color:#9da5b4;font-size:13px}
 #chat{flex:1;padding:24px 20px;overflow-y:auto}
-.message{max-width:80%;padding:12px 15px;margin:0 0 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
+.message{width:fit-content;max-width:80%;padding:12px 15px;margin:0 0 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
 .user{margin-left:auto;background:#315efb}.assistant{margin-right:auto;background:#1b1f29;border:1px solid #292d38}.error{background:#4a1f24;border-color:#74323a}
 form{padding:16px 20px 20px;border-top:1px solid #292d38}
 .composer{position:relative;width:100%}
